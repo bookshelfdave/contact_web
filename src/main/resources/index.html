@@ -1,0 +1,161 @@
+<html>
+  <head>
+    <title>Try Riak</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+
+<script language="Javascript">
+    if (typeof String.prototype.startsWith != 'function') {
+        // see below for better implementation!
+        String.prototype.startsWith = function (str){
+            return this.indexOf(str) == 0;
+        };
+    }
+
+    function doit() {
+        $("#successalert").fadeOut(250);
+        $("#failurealert").fadeOut(250);
+        data = $("#doit_value").val()
+      $.ajax({
+        url: "/process",
+        data: {
+          command: data
+        },
+        type: "post",
+        dataType: "text",
+        success: function( data) {
+          if(data.startsWith("Error:")) {
+              $("#failurealert").fadeIn(750);
+              $( "#failurealert" ).html( "<strong>" + data + "</strong>" );
+
+          } else {
+              $( "#result" ).fadeIn(750);
+              if(data == "") {
+                $("#successalert").fadeIn(750);
+                $( "#result" ).html( "<strong>Ok</strong>" );
+              } else {
+                $( "#result" ).html( "<strong>" + data + "</strong>" );
+                $("#successalert").fadeIn(250);
+              }
+          }
+        }
+      });
+    }
+
+  $( document ).ready(function() {
+    $( "#doit_button" ).on( "click", function( event ) {
+      doit();
+    });
+  });
+   </script>
+  </head>
+  <body>
+    Welcome to Contact!
+
+
+    <div class="tabbable"> <!-- Only required for left/right tabs -->
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab1" data-toggle="tab">Use a Bucket</a></li>
+            <li><a href="#tab2" data-toggle="tab">Store a Key</a></li>
+            <li><a href="#tab3" data-toggle="tab">Fetch a Key</a></li>
+            <li><a href="#tab4" data-toggle="tab">Bulk Operations</a></li>
+            <li><a href="#tab5" data-toggle="tab">2i Query</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+<pre style="width:500px">
+use bucket "Google";
+get bucket;
+</pre>
+            </div>
+            <div class="tab-pane" id="tab2">
+<pre style="width:500px">
+store "Test1" with text "This is a test";
+store "Test2" with text ~%~
+Some text
+~%~;
+</pre>
+            </div>
+
+            <div class="tab-pane" id="tab3">
+<pre style="width:500px">
+fetch "Test1";
+fetch "Test2";
+</pre>
+            </div>
+
+            <div class="tab-pane" id="tab4">
+<pre style="width:500px">
+using bucket "Google" count keys;
+use bucket "Google";
+list keys;
+list buckets;
+</pre>
+            </div>
+
+            <div class="tab-pane" id="tab5">
+<pre style="width:500px">
+use bucket "Google";
+query2i and fetch with index "year_int" and value "2010";
+query2i and fetch with index "year_int" and value "2010";
+
+</pre>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <table>
+      <tr>
+          <td>
+
+              <form>
+                  <textarea id="doit_value" rows="2" cols="50" style="width:800px;height:300px"></textarea>
+              </form>
+          </td>
+
+          <td>
+                  <button id="doit_button"  class="btn">Run</button>
+
+
+                  <div id="successalert" class="alert alert-success" style="display: none;">
+                      Ok
+                  </div>
+
+                  <div id="failurealert" class="alert alert-error" style="display: none;">
+                      ...
+                  </div>
+          </td>
+      </tr>
+      <tr>
+          <td>
+              <div style="width:800px; height:200px">
+                  <pre id="result"></pre>
+              </div>
+
+          </td>
+      </tr>
+
+
+
+
+
+
+
+    </table>
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
