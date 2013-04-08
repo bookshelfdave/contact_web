@@ -46,9 +46,7 @@ public class App {
 //    }
 
     public static String loadResource(String name) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        URL url = loader.getResource(name);
-        File f = new File(url.getPath());
+        File f = new File(name);
         String result = "";
         try {
             result = org.apache.commons.io.FileUtils.readFileToString(f);
@@ -58,11 +56,13 @@ public class App {
         return result;
     }
 
-    public App() {
+    public App(String dr) {
+        final String docroot = dr;
         get(new Route("/") {
             @Override
             public Object handle(Request request, Response response) {
-                return loadResource("index.html");
+                String path = docroot + "/index.html";
+                return loadResource(path);
             }
         });
 
@@ -165,7 +165,16 @@ public class App {
                 .withArgName("line")
                 .create();
 
+        Option docroot = OptionBuilder
+                .withLongOpt("docroot")
+                .withDescription("Full path to web directory")
+                .hasArg()
+                .withArgName("line")
+                .create();
+
         options.addOption(hosts);
+        options.addOption(docroot);
+
         CommandLineParser parser = new org.apache.commons.cli.GnuParser();
         try {
             CommandLine line = parser.parse(options, args);
@@ -185,7 +194,9 @@ public class App {
     public static void main(String[] args) {
         CommandLine cl = processArgs(args);
         connections = new WebConnectionProvider(cl.getOptionValue("hosts"));
-        new App();
+        String docroot = cl.getOptionValue("docroot");
+        System.out.println("Docroot = " + docroot);
+        new App(docroot);
     }
 
 
