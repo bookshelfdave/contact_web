@@ -10,7 +10,11 @@ To run:
 	
 2) Run the Java class
 
-	com.metadave.contactweb.App with --hosts=ip:port,ip:port,etc
+```
+	mvn package
+	
+   ./contact_web --hosts=127.0.0.1:10017
+```	
 	
 3) Browse to:
 
